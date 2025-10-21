@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Message
 import os
 import re
+from werkzeug.utils import secure_filename
 
 
 bp = Blueprint('main', __name__)
@@ -18,6 +19,16 @@ def parse_emails(email_string):
     valid_emails = [email for email in emails if re.match(email_pattern, email)]
     
     return valid_emails
+
+def get_uploaded_files():
+    """Extract uploaded files from request"""
+    files = []
+    for key in request.files:
+        if key.startswith('attachment_'):
+            file = request.files[key]
+            if file and file.filename:
+                files.append(file)
+    return files
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -61,7 +72,6 @@ def index():
                 except Exception as email_error:
                     failed_emails.append(f"{email}: {str(email_error)}")
             
-            # Show results
             if failed_emails:
                 flash(f'Partially successful: {success_count}/{len(email_list)} emails sent. Failed: {", ".join(failed_emails)}', 'warning')
             else:
@@ -77,10 +87,17 @@ def index():
 
 @bp.route('/send-emails', methods=['POST'])
 def send_emails():
-    data = request.get_json()
-    recipients = data.get('recipients', '')
-    subject = data.get('subject', '')
-    content = data.get('content', '')
+    if request.is_json:
+        data = request.get_json()
+        recipients = data.get('recipients', '')
+        subject = data.get('subject', '')
+        content = data.get('content', '')
+        attachments = []
+    else:
+        recipients = request.form.get('recipients', '')
+        subject = request.form.get('subject', '')
+        content = request.form.get('content', '')
+        attachments = get_uploaded_files()
     
     email_list = parse_emails(recipients)
     results = []
@@ -100,6 +117,16 @@ def send_emails():
                     body=content,
                     sender=current_app.config.get('MAIL_DEFAULT_SENDER')
                 )
+                
+                for attachment in attachments:
+                    filename = secure_filename(attachment.filename)
+                    msg.attach(
+                        filename=filename,
+                        content_type=attachment.content_type,
+                        data=attachment.read()
+                    )
+                    attachment.seek(0)
+                
                 mail.send(msg)
                 results.append({'email': email, 'status': 'success'})
             except Exception as email_error:

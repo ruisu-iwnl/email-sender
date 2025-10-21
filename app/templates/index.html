@@ -25,6 +25,13 @@
             <textarea class="form-control" id="content" name="content" rows="8" placeholder="Type your message here..."></textarea>
           </div>
           
+          <div class="mb-3">
+            <label for="file-upload" class="form-label">Attachments</label>
+            <input type="file" class="form-control" id="file-upload" name="attachments" multiple accept=".link,.jpeg,.jpg,.png,.docx,.xlsx,.pdf">
+            <div class="form-text">Supported formats: LINK, JPEG, JPG, PNG, DOCX, XLSX, PDF</div>
+            <div id="file-list" class="mt-2"></div>
+          </div>
+          
           <div class="d-grid">
             <button type="submit" class="btn btn-primary btn-lg">Send Email</button>
           </div>
@@ -40,8 +47,26 @@
       </div>
       <div class="card-body">
         <div id="console-output" class="bg-dark text-light p-3 rounded" style="height: 400px; overflow-y: auto; font-family: monospace;">
-          <div class="text-muted">Ready to send emails...</div>
+          <div class="text-light">Ready to send emails...</div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filePreviewModalLabel">File Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="file-preview-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="remove-file-btn">Remove File</button>
       </div>
     </div>
   </div>
