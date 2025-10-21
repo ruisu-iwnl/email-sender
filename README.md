@@ -1,6 +1,6 @@
 # Flask Email Sender
 
-simple flask app to send email to multiple applicants.
+automation tool to send email to multiple recipients. can be useful for mass recruitment, mass group message.
 
 ## Setup
 
