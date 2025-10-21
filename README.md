@@ -20,6 +20,17 @@ python run.py
 
 Visit: http://127.0.0.1:5000
 
+## How to Use
+
+1. Enter recipient email addresses (one per line)
+2. Enter subject and message
+3. Click "Send Email"
+
+**Example:**
+- Recipients: `john@example.com`, `jane@example.com`
+- Subject: `Job Application Update`
+- Message: `Thank you for your application. We'll be in touch soon.`
+
 ## Environment Variables
 
 Copy `.env.example` to `.env` and fill in your SMTP settings:
