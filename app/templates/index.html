@@ -1,9 +1,49 @@
 {% extends 'base.html' %}
 
-{% block title %}Home · Email Sender{% endblock %}
+{% block title %}Email Sender{% endblock %}
 
 {% block content %}
-
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Send Email</h5>
+        <form method="POST">
+          <div class="mb-3">
+            <label for="recipients" class="form-label">Email Addresses</label>
+            <textarea class="form-control" id="recipients" name="recipients" rows="3" placeholder="Enter email addresses, one per line or separated by commas"></textarea>
+            <div class="form-text">Separate multiple emails with commas or put each on a new line</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="subject" name="subject" placeholder="Email subject">
+          </div>
+          
+          <div class="mb-3">
+            <label for="content" class="form-label">Message</label>
+            <textarea class="form-control" id="content" name="content" rows="8" placeholder="Type your message here..."></textarea>
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Send Email</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Console</h5>
+      </div>
+      <div class="card-body">
+        <div id="console-output" class="bg-dark text-light p-3 rounded" style="height: 400px; overflow-y: auto; font-family: monospace;">
+          <div class="text-muted">Ready to send emails...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
-
-
