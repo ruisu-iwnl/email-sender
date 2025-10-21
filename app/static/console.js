@@ -256,9 +256,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const recipients = document.getElementById('recipients').value;
         const subject = document.getElementById('subject').value;
         const content = document.getElementById('content').value;
+        const useHtmlContent = document.getElementById('use-html-content').checked;
         
-        if (!recipients || !subject || !content) {
-            alert('Please fill in all fields');
+        if (!recipients || !subject) {
+            alert('Please fill in recipients and subject fields');
+            return;
+        }
+        
+        if (!useHtmlContent && !content) {
+            alert('Please fill in the message content');
             return;
         }
         
@@ -271,6 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('recipients', recipients);
             formData.append('subject', subject);
             formData.append('content', content);
+            if (useHtmlContent) {
+                formData.append('use_html_content', 'on');
+            }
             
             const files = fileManager.getFiles();
             files.forEach((file, index) => {

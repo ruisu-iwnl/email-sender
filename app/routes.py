@@ -37,9 +37,22 @@ def index():
         recipients = request.form.get('recipients', '')
         subject = request.form.get('subject', '')
         content = request.form.get('content', '')
+        use_html_content = request.form.get('use_html_content') == 'on'
         
-        if not recipients or not subject or not content:
-            flash('Please fill in all fields', 'error')
+        if use_html_content:
+            try:
+                with open('mailcontent.html', 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except FileNotFoundError:
+                flash('mailcontent.html file not found', 'error')
+                return render_template('index.html')
+        
+        if not recipients or not subject:
+            flash('Please fill in recipients and subject fields', 'error')
+            return render_template('index.html')
+        
+        if not use_html_content and not content:
+            flash('Please fill in the message content', 'error')
             return render_template('index.html')
         
         email_list = parse_emails(recipients)
@@ -61,12 +74,20 @@ def index():
             
             for email in email_list:
                 try:
-                    msg = Message(
-                        subject=subject,
-                        recipients=[email],
-                        body=content,
-                        sender=current_app.config.get('MAIL_DEFAULT_SENDER')
-                    )
+                    if use_html_content:
+                        msg = Message(
+                            subject=subject,
+                            recipients=[email],
+                            html=content,
+                            sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+                        )
+                    else:
+                        msg = Message(
+                            subject=subject,
+                            recipients=[email],
+                            body=content,
+                            sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+                        )
                     mail.send(msg)
                     success_count += 1
                 except Exception as email_error:
@@ -92,12 +113,21 @@ def send_emails():
         recipients = data.get('recipients', '')
         subject = data.get('subject', '')
         content = data.get('content', '')
+        use_html_content = data.get('use_html_content', False)
         attachments = []
     else:
         recipients = request.form.get('recipients', '')
         subject = request.form.get('subject', '')
         content = request.form.get('content', '')
+        use_html_content = request.form.get('use_html_content') == 'on'
         attachments = get_uploaded_files()
+    
+    if use_html_content:
+        try:
+            with open('mailcontent.html', 'r', encoding='utf-8') as f:
+                content = f.read()
+        except FileNotFoundError:
+            return jsonify({'error': 'mailcontent.html file not found'})
     
     email_list = parse_emails(recipients)
     results = []
@@ -111,12 +141,20 @@ def send_emails():
         
         for email in email_list:
             try:
-                msg = Message(
-                    subject=subject,
-                    recipients=[email],
-                    body=content,
-                    sender=current_app.config.get('MAIL_DEFAULT_SENDER')
-                )
+                if use_html_content:
+                    msg = Message(
+                        subject=subject,
+                        recipients=[email],
+                        html=content,
+                        sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+                    )
+                else:
+                    msg = Message(
+                        subject=subject,
+                        recipients=[email],
+                        body=content,
+                        sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+                    )
                 
                 for attachment in attachments:
                     filename = secure_filename(attachment.filename)
